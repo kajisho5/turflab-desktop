@@ -5,7 +5,8 @@ namespace TurfLab.Jv.Com;
 
 /// <summary>
 /// 本物の JV-Link（COM, ProgID "JVDTLab.JVLink"）を呼ぶ。
-/// ・JV-Link は 32bit の部品なので、このアプリも 32bit(x86)でビルドして動かす。
+/// ・JV-Link には32bit版と64bit版があり、別の部品。exeも32bit用(x86)と64bit用(x64)を両方ビルドする。
+///   （64bit版の ProgID が同じかは公式のお知らせに記載が無く未確認。見つからなければ上のエラーになる）
 /// ・JVRead は文字列バッファを「参照渡し」で受け取る。実機（PowerShell+C#）で SEHException を避けられた
 ///   ParameterModifier 経由の呼び方と、事前にバッファを確保する方法をそのまま踏襲した。
 ///   （docs/DATA_SOURCES.md の落とし穴 2 を参照）
@@ -19,9 +20,11 @@ public sealed class ComJvLink : IJvLink
     public ComJvLink()
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("JV-Link は Windows でのみ動きます");
-        if (IntPtr.Size != 4) throw new InvalidOperationException("JV-Link は32bit部品です。このアプリを32bit(x86)で動かしてください");
+        // 32bit版と64bit版のJV-Linkは別の部品。このexeと同じbit数のJV-Linkが要る。
         _type = Type.GetTypeFromProgID("JVDTLab.JVLink")
-                ?? throw new InvalidOperationException("JV-Link が見つかりません。JRA-VAN Data Lab. のソフトをインストールしてください");
+                ?? throw new InvalidOperationException(
+                    $"{IntPtr.Size * 8}bit版のJV-Linkが見つかりません。このexeは{IntPtr.Size * 8}bit用です。" +
+                    "同じbit数のJV-Linkを入れるか、もう一方のbit数のexeを使ってください");
         _obj = Activator.CreateInstance(_type)!;
     }
 

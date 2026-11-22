@@ -16,12 +16,16 @@ jobs:
           dotnet-version: 10.0.x
       - name: テスト
         run: dotnet test tests/TurfLab.Jv.Tests -c Release
-      - name: 32bit の exe を作る
-        run: dotnet publish src/TurfLab.Cli -c Release -o out
+      - name: 64bit版と32bit版のexeを作る
+        run: |
+          dotnet publish src/TurfLab.Cli -c Release -r win-x64 --self-contained -o out/64bit
+          dotnet publish src/TurfLab.Cli -c Release -r win-x86 --self-contained -o out/32bit
+          Copy-Item dist/probe_64bit.bat out/64bit/probe.bat
+          Copy-Item dist/probe_32bit.bat out/32bit/probe.bat
       - name: zip にまとめる
         shell: pwsh
-        run: Compress-Archive -Path out\* -DestinationPath TurfLab-cli-win-x86.zip
+        run: Compress-Archive -Path out\* -DestinationPath TurfLab-win.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: TurfLab-cli-win-x86
-          path: TurfLab-cli-win-x86.zip
+          name: TurfLab-win
+          path: TurfLab-win.zip
