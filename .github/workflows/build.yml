@@ -1,0 +1,27 @@
+name: build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+# 鍵・秘密情報は使わない。pull_request では動かさない。
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: テスト
+        run: dotnet test tests/TurfLab.Jv.Tests -c Release
+      - name: 32bit の exe を作る
+        run: dotnet publish src/TurfLab.Cli -c Release -o out
+      - name: zip にまとめる
+        shell: pwsh
+        run: Compress-Archive -Path out\* -DestinationPath TurfLab-cli-win-x86.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TurfLab-cli-win-x86
+          path: TurfLab-cli-win-x86.zip

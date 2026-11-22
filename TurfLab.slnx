@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TurfLab.Cli/TurfLab.Cli.csproj" />
+    <Project Path="src/TurfLab.Jv.Com/TurfLab.Jv.Com.csproj" />
+    <Project Path="src/TurfLab.Jv/TurfLab.Jv.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TurfLab.Jv.Tests/TurfLab.Jv.Tests.csproj" />
+  </Folder>
+</Solution>
